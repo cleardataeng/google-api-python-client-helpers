@@ -1,0 +1,19 @@
+google-api-python-client-helpers documentation
+==============================================
+
+Contents:
+
+.. toctree::
+   :maxdepth: 4
+
+   readme
+   installation
+   usage
+   modules
+
+Indicies and tables
+===================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

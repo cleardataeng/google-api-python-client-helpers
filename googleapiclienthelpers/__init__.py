@@ -1,0 +1,5 @@
+'''Some helpers that make google-api-python-client a bit nicer to use.
+
+'''
+
+__version__ = '1.0.0'
