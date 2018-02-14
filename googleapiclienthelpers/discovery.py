@@ -40,7 +40,7 @@ def build_subresource(servicePath,
     Returns:
       A Resource object with methods for interacting with the service.
 
-  """
+    """
     splits = servicePath.split('.')
     serviceName = splits[0]
     subresources = splits[1:]
