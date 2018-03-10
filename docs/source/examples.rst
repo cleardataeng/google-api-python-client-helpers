@@ -58,3 +58,40 @@ policy changes straightfoward:
 The bindings you request must meet any underlying constraints on
 ``setIamPolicy`` calls.  For example, the API cannot be used to add a
 user as a project owner.
+
+
+Waiter
+------
+
+Sometimes you need to block for an operation to complete.  The
+:class:`.Waiter` makes this easy to do in a generic way.  For instance,
+suppose you want to launch a Deployment Manager deployment and wait
+until it is complete:
+
+.. code-block:: python
+
+   from googleapiclienthelpers.discovery import build_subresource
+   from googleapiclienthelpers.waiter import Waiter
+
+   deployments = build_subresource('deploymentmanager.deployments', 'v2')
+   r = deployments.insert(project='example', body={
+       'name': 'example',
+       'target': {...},
+   }).execute()
+
+   waiter = Waiter(deployments.get, project='example', deployment='example')
+   waiter.wait('status', 'DONE')
+
+
+To create a :class:`.Waiter`, you must
+supply:
+
+#. The resource method you want to wait on.
+#. All positional and keyword arguments required to invoke it.
+
+Then, call the :meth:`.wait()` method to start the process.  The first
+argument is the response key that the waiter will look for.  The
+second argument is the status it should wait for.
+
+By default, this will poll the resource once every two seconds for a
+max of 60 retries.  These values can be overridden.
