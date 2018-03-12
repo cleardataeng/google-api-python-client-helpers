@@ -4,11 +4,7 @@ google-api-python-client-helpers
 This library collects helpers that make google-api-python-client a bit
 nicer to use.
 
-.. |pypi| image:: https://img.shields.io/pypi/v/google-api-python-client-helpers.svg
-   :target: https://pypi.org/project/google-api-python-client-helpers/
-.. |travis| image:: https://travis-ci.org/cleardataeng/google-api-python-client-helpers.svg?branch=master
-   :target: https://travis-ci.org/cleardataeng/google-api-python-client-helpers
-
+|pypi| |travis| |versions|
 
 Test suite
 ----------
@@ -36,3 +32,16 @@ The application default credentials must have appropriate access to
 this project.  For example::
 
   $ REMOTE_TESTS=1 GOOGLE_PROJECT=my-test-project tox
+
+
+License
+-------
+
+This library is Apache 2.0: details `here <https://github.com/cleardataeng/google-api-python-client-helpers/blob/master/LICENSE>`_.
+
+.. |pypi| image:: https://img.shields.io/pypi/v/google-api-python-client-helpers.svg
+   :target: https://pypi.org/project/google-api-python-client-helpers/
+.. |travis| image:: https://travis-ci.org/cleardataeng/google-api-python-client-helpers.svg?branch=master
+   :target: https://travis-ci.org/cleardataeng/google-api-python-client-helpers
+.. |versions| image:: https://img.shields.io/pypi/pyversions/google-api-python-client-helpers.svg
+   :target: https://pypi.org/project/google-api-python-client-helpers/
