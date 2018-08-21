@@ -32,6 +32,7 @@ setup(
     url="http://github.com/cleardataeng/google-api-python-client-helpers/",
     install_requires=[
         'google-api-python-client',
+        'oauth2client',
     ],
     packages=[
         'googleapiclienthelpers',
