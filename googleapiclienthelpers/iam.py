@@ -1,3 +1,7 @@
+import tenacity
+
+from .exceptions import is_retryable_exception
+
 __all__ = [
     'add_binding',
     'get_policy',
@@ -77,6 +81,11 @@ def get_policy(client, **kargs):
     return client.getIamPolicy(**kargs).execute()
 
 
+@tenacity.retry(
+    retry=tenacity.retry_if_result(is_retryable_exception),
+    wait=tenacity.wait_random_exponential(multiplier=0.2, max=10),
+    stop=tenacity.stop_after_attempt(3),
+)
 def add_binding(client, role, member, **kargs):
     '''Generic function to add an IAM binding to any GCP resource.
 
@@ -123,6 +132,11 @@ def add_binding(client, role, member, **kargs):
     return client.setIamPolicy(body={'policy': policy}, **kargs).execute()
 
 
+@tenacity.retry(
+    retry=tenacity.retry_if_result(is_retryable_exception),
+    wait=tenacity.wait_random_exponential(multiplier=0.2, max=10),
+    stop=tenacity.stop_after_attempt(3),
+)
 def remove_binding(client, role, member, **kargs):
     '''Generic function to remove an IAM binding from any GCP resource.
 

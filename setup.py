@@ -32,7 +32,9 @@ setup(
     url="http://github.com/cleardataeng/google-api-python-client-helpers/",
     install_requires=[
         'google-api-python-client',
+        'httplib2',
         'oauth2client',
+        'tenacity',
     ],
     packages=[
         'googleapiclienthelpers',
