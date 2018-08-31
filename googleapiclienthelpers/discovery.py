@@ -1,12 +1,6 @@
 from googleapiclient import discovery
 
-# Oauth2client < 3 has the positional helper in 'util', >= 3 has it
-# in '_helpers'.
-try:
-    from oauth2client.util import positional
-
-except ImportError:
-    from oauth2client._helpers import positional
+from positional import positional
 
 __all__ = [
     'build_subresource',

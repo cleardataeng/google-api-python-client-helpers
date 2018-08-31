@@ -33,7 +33,7 @@ setup(
     install_requires=[
         'google-api-python-client',
         'httplib2',
-        'oauth2client',
+        'positional',
         'tenacity',
     ],
     packages=[
