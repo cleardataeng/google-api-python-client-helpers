@@ -29,6 +29,46 @@ def get_role_bindings(policy, role):
     return None
 
 
+def _build_request_body(client, policy):
+    '''
+    Most APIs expect a `SetIAMPolicyRequest` body, however
+    storage.buckets.setIamPolicy expects just the `Policy`
+
+    This checks the request schema and tries to build the appropriate
+    body
+
+    Args:
+      client: Resource, any googleapiclient resource or subresource.
+      policy: Policy, a google Policy object
+
+    Returns:
+      dict, request body required for setIamPolicy call to client
+
+    '''
+
+    def _nested_get(mydict, query, default=None):
+        res = mydict
+
+        for key in query.split('.'):
+            if isinstance(res, dict):
+                res = res.get(key, None)
+            else:
+                return default
+
+        return res
+
+    request_body_schema = _nested_get(
+        client._resourceDesc,
+        'methods.setIamPolicy.parameters.body.$ref'
+    )
+
+    if request_body_schema == 'Policy':
+        return policy
+
+    # Default to the SetIAMPolicyRequest format
+    return {'policy': policy}
+
+
 def _api_requires_empty_body(client):
     '''Does the given client's getIamPolicy require an empty body param?
 
@@ -120,7 +160,10 @@ def add_binding(client, role, member, **kargs):
             'members': [member],
         })
 
-    return client.setIamPolicy(body={'policy': policy}, **kargs).execute()
+    return client.setIamPolicy(
+        body=_build_request_body(client, policy),
+        **kargs
+    ).execute()
 
 
 def remove_binding(client, role, member, **kargs):
@@ -157,4 +200,7 @@ def remove_binding(client, role, member, **kargs):
     except ValueError:
         return                  # no member to remove, we're done
 
-    return client.setIamPolicy(body={'policy': policy}, **kargs).execute()
+    return client.setIamPolicy(
+        body=_build_request_body(client, policy),
+        **kargs
+    ).execute()
