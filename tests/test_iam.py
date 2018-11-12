@@ -11,7 +11,7 @@ test_time = datetime.datetime.utcnow().strftime('%s')
 
 
 @pytest.fixture(scope='module',
-                params=['pubsub', 'cloudresourcemanager'])
+                params=['pubsub', 'cloudresourcemanager', 'storage'])
 def scenario(request):
     '''Generate an iam test scenario
 
@@ -41,6 +41,19 @@ def scenario(request):
 
         kwargs = {'resource': project_id}
         yield (client, kwargs)
+
+    elif request.param == 'storage':
+        client = build_subresource('storage.buckets', 'v1')
+
+        bucket = client.insert(
+            project=project_id,
+            body={'name': 'gapich-test-{}'.format(test_time)}
+        ).execute()
+
+        kwargs = {'bucket': bucket['name']}
+        yield (client, kwargs)
+
+        client.delete(bucket=bucket['name'])
 
 
 @pytest.fixture(scope='module')
