@@ -31,14 +31,16 @@ def scenario(request):
             body={},
         ).execute()
 
-        yield (client, topic['name'])
+        kwargs = {'resource': topic['name']}
+        yield (client, kwargs)
 
         client.delete(topic=topic['name']).execute()
 
     elif request.param == 'cloudresourcemanager':
         client = build_subresource('cloudresourcemanager.projects', 'v1beta1')
 
-        yield (client, project_id)
+        kwargs = {'resource': project_id}
+        yield (client, kwargs)
 
 
 @pytest.fixture(scope='module')
@@ -57,23 +59,22 @@ def member():
 @pytest.mark.skipif(not remote_tests or not project_id,
                     reason='GOOGLE_PROJECT is unset or empty')
 def test_iam_helpers(scenario, member):
-    client, resource = scenario
+    client, kwargs = scenario
 
     # add a new binding
     googleapiclienthelpers.iam.add_binding(
         client,
         'roles/viewer',
         member,
-        resource=resource,
+        **kwargs
     )
 
     # prepare to call getIamPolicy, making up for nonuniform IAM APIs
-    get_policy_args = {'resource': resource}
     if googleapiclienthelpers.iam._api_requires_empty_body(client):
-        get_policy_args['body'] = {}
+        kwargs['body'] = {}
 
     # check that the member was added
-    policy = client.getIamPolicy(**get_policy_args).execute()
+    policy = client.getIamPolicy(**kwargs).execute()
     binding = googleapiclienthelpers.iam.get_role_bindings(
         policy,
         'roles/viewer',
@@ -85,11 +86,11 @@ def test_iam_helpers(scenario, member):
         client,
         'roles/viewer',
         member,
-        resource=resource,
+        **kwargs
     )
 
     # check that the member was removed
-    policy = client.getIamPolicy(**get_policy_args).execute()
+    policy = client.getIamPolicy(**kwargs).execute()
     binding = googleapiclienthelpers.iam.get_role_bindings(
         policy,
         'roles/viewer',
