@@ -197,6 +197,11 @@ def remove_binding(client, role, member, **kargs):
 
     try:
         binding.get('members', []).remove(member)
+
+        # If there are no more members for this role binding, remove
+        # binding from policy
+        if len(binding.get('members')) == 0:
+            policy['bindings'].remove(binding)
     except ValueError:
         return                  # no member to remove, we're done
 
