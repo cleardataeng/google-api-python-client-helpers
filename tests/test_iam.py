@@ -53,7 +53,7 @@ def scenario(request):
         kwargs = {'bucket': bucket['name']}
         yield (client, 'roles/storage.objectViewer', kwargs)
 
-        client.delete(bucket=bucket['name'])
+        client.delete(bucket=bucket['name']).execute()
 
 
 @pytest.fixture(scope='module')
