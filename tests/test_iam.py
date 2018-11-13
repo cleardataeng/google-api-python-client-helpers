@@ -32,7 +32,7 @@ def scenario(request):
         ).execute()
 
         kwargs = {'resource': topic['name']}
-        yield (client, kwargs)
+        yield (client, 'roles/viewer', kwargs)
 
         client.delete(topic=topic['name']).execute()
 
@@ -40,7 +40,7 @@ def scenario(request):
         client = build_subresource('cloudresourcemanager.projects', 'v1beta1')
 
         kwargs = {'resource': project_id}
-        yield (client, kwargs)
+        yield (client, 'roles/viewer', kwargs)
 
     elif request.param == 'storage':
         client = build_subresource('storage.buckets', 'v1')
@@ -51,7 +51,7 @@ def scenario(request):
         ).execute()
 
         kwargs = {'bucket': bucket['name']}
-        yield (client, kwargs)
+        yield (client, 'roles/storage.objectViewer', kwargs)
 
         client.delete(bucket=bucket['name'])
 
@@ -72,12 +72,12 @@ def member():
 @pytest.mark.skipif(not remote_tests or not project_id,
                     reason='GOOGLE_PROJECT is unset or empty')
 def test_iam_helpers(scenario, member):
-    client, kwargs = scenario
+    client, role, kwargs = scenario
 
     # add a new binding
     googleapiclienthelpers.iam.add_binding(
         client,
-        'roles/viewer',
+        role,
         member,
         **kwargs
     )
@@ -90,14 +90,14 @@ def test_iam_helpers(scenario, member):
     policy = client.getIamPolicy(**kwargs).execute()
     binding = googleapiclienthelpers.iam.get_role_bindings(
         policy,
-        'roles/viewer',
+        role,
     )
     assert member in binding.get('members', ())
 
     # remove the binding
     googleapiclienthelpers.iam.remove_binding(
         client,
-        'roles/viewer',
+        role,
         member,
         **kwargs
     )
@@ -106,7 +106,7 @@ def test_iam_helpers(scenario, member):
     policy = client.getIamPolicy(**kwargs).execute()
     binding = googleapiclienthelpers.iam.get_role_bindings(
         policy,
-        'roles/viewer',
+        role,
     )
     if binding:
         assert member not in binding.get('members', ())
