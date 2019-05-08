@@ -46,3 +46,4 @@ This library is Apache 2.0: details `here <https://github.com/cleardataeng/googl
 .. |versions| image:: https://img.shields.io/pypi/pyversions/google-api-python-client-helpers.svg
    :target: https://pypi.org/project/google-api-python-client-helpers/
 .. |docs| image:: https://img.shields.io/readthedocs/google-api-python-client-helpers.svg
+   :target: https://google-api-python-client-helpers.readthedocs.io/
