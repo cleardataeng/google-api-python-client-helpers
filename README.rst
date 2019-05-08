@@ -4,7 +4,7 @@ google-api-python-client-helpers
 This library collects helpers that make google-api-python-client a bit
 nicer to use.
 
-|pypi| |travis| |versions|
+|pypi| |travis| |versions| |docs|
 
 Test suite
 ----------
@@ -45,3 +45,4 @@ This library is Apache 2.0: details `here <https://github.com/cleardataeng/googl
    :target: https://travis-ci.org/cleardataeng/google-api-python-client-helpers
 .. |versions| image:: https://img.shields.io/pypi/pyversions/google-api-python-client-helpers.svg
    :target: https://pypi.org/project/google-api-python-client-helpers/
+.. |docs| image:: https://img.shields.io/readthedocs/google-api-python-client-helpers.svg
