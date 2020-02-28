@@ -40,7 +40,7 @@ class Waiter(object):
         self.args = args
         self.kargs = kargs
 
-    def wait(self, field, value, retries=60, interval=2):
+    def wait(self, field, value, retries=60, interval=2, terminal_values=[]):
         '''Wait until an object reached the desired status
 
         When called, the Waiter will invoke the callable provided at
@@ -59,6 +59,8 @@ class Waiter(object):
           value: varies, the value indicating the desired state.
           retries: int, maximum number of times to poll.
           interval: float, time to sleep between polls.
+          terminal_values: list<string> of values that indicate an unrecoverable
+              state. If encountered an exception is raised. 
 
         '''
         count = 0
@@ -68,22 +70,31 @@ class Waiter(object):
 
             # field might be a dict key
             try:
-                if response[field] == value:
+                field_val = response[field]
+                if field_val == value:
                     return response
+                if field_val in terminal_values:
+                    raise ValueError('Received one of the terminal states: %s' % field_val)
             except KeyError:
                 pass
 
             # field might be an object attribute
             try:
-                if getattr(response, field) == value:
+                field_val = getattr(response, field)
+                if field_val == value:
                     return response
+                if field_val in terminal_values:
+                    raise ValueError('Received one of the terminal states: %s' % field_val)
             except (AttributeError, TypeError):
                 pass
 
             # field might be a callable that finds the right thing
             try:
-                if field(response) == value:
+                field_val = field(response)
+                if field_val == value:
                     return response
+                if field_val in terminal_values:
+                    raise ValueError('Received one of the terminal states: %s' % field_val)
             except TypeError:
                 pass
 
