@@ -1,3 +1,4 @@
+import operator
 import time
 
 __all__ = [
@@ -40,7 +41,7 @@ class Waiter(object):
         self.args = args
         self.kargs = kargs
 
-    def wait(self, field, value, retries=60, interval=2):
+    def wait(self, field, value, retries=60, interval=2, terminal_values=()):
         '''Wait until an object reached the desired status
 
         When called, the Waiter will invoke the callable provided at
@@ -59,33 +60,30 @@ class Waiter(object):
           value: varies, the value indicating the desired state.
           retries: int, maximum number of times to poll.
           interval: float, time to sleep between polls.
+          terminal_values: iterable, values that indicate an unrecoverable
+            state.  If encountered, ValueError is raised.
 
         '''
         count = 0
 
+        # order matches docstring above
+        retrieval_methods = (
+            lambda x: operator.getitem(x, field),
+            lambda x: getattr(x, field),
+            field,
+        )
+
         while count < retries:
             response = self.func(*self.args, **self.kargs).execute()
 
-            # field might be a dict key
-            try:
-                if response[field] == value:
-                    return response
-            except KeyError:
-                pass
+            for method in retrieval_methods:
+                curr_val = method(response)
 
-            # field might be an object attribute
-            try:
-                if getattr(response, field) == value:
+                if curr_val == value:
                     return response
-            except (AttributeError, TypeError):
-                pass
 
-            # field might be a callable that finds the right thing
-            try:
-                if field(response) == value:
-                    return response
-            except TypeError:
-                pass
+                if curr_val in terminal_values:
+                    raise ValueError('Received terminal value: %s' % curr_val)
 
             # either the desired status hasn't been reached, or the
             # user passed something nonsensical as field/value
