@@ -1,8 +1,12 @@
 import time
 
-__all__ = [
-    'Waiter',
-]
+__all__ = ['Waiter', 'WaiterException']
+
+# Extend ValueError so we can provide the response when we fail to reach a desired state
+class WaiterException(ValueError):
+    def __init__(self, *args, response=None):
+        super().__init__(*args)
+        self.response = response
 
 
 class Waiter(object):
@@ -26,6 +30,7 @@ class Waiter(object):
     >>> waiter.wait('status', 'RUNNING')
 
     '''
+
     def __init__(self, func, *args, **kargs):
         '''Construct a new Waiter
 
@@ -60,7 +65,7 @@ class Waiter(object):
           retries: int, maximum number of times to poll.
           interval: float, time to sleep between polls.
           terminal_values: list<string> of values that indicate an unrecoverable
-              state. If encountered an exception is raised. 
+              state. If encountered an exception is raised.
 
         '''
         count = 0
@@ -74,7 +79,10 @@ class Waiter(object):
                 if field_val == value:
                     return response
                 if field_val in terminal_values:
-                    raise ValueError('Received one of the terminal states: %s' % field_val)
+                    raise WaiterException(
+                        'Received one of the terminal states: %s' % field_val,
+                        response=response,
+                    )
             except KeyError:
                 pass
 
@@ -84,7 +92,10 @@ class Waiter(object):
                 if field_val == value:
                     return response
                 if field_val in terminal_values:
-                    raise ValueError('Received one of the terminal states: %s' % field_val)
+                    raise WaiterException(
+                        'Received one of the terminal states: %s' % field_val,
+                        response=response,
+                    )
             except (AttributeError, TypeError):
                 pass
 
@@ -94,7 +105,10 @@ class Waiter(object):
                 if field_val == value:
                     return response
                 if field_val in terminal_values:
-                    raise ValueError('Received one of the terminal states: %s' % field_val)
+                    raise WaiterException(
+                        'Received one of the terminal states: %s' % field_val,
+                        response=response,
+                    )
             except TypeError:
                 pass
 
